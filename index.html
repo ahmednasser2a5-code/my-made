@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>💌 Will you be my Valentine?</title>
+  <style>
+    :root{
+      --bg1:#ffdde7; --bg2:#fff1f6;
+      --card:#ffffffcc; --text:#2b2b2b;
+      --accent:#ff3b7a; --accent2:#ff77a8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; min-height:100vh;
+      display:grid; place-items:center;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--text);
+      background: radial-gradient(1200px 800px at 20% 20%, var(--bg2), var(--bg1));
+      overflow:hidden;
+    }
+    .wrap{ width:min(560px, 92vw); padding:18px; position:relative; }
+    .card{
+      background:var(--card);
+      backdrop-filter: blur(10px);
+      border:1px solid #ffffff80;
+      border-radius:22px;
+      box-shadow: 0 20px 60px #00000018;
+      padding:26px 22px;
+      text-align:center;
+      position:relative;
+    }
+    h1{ margin:0 0 8px; font-size: clamp(26px, 4vw, 36px); }
+    p{ margin:8px 0; font-size:16px; line-height:1.4; }
+
+    .row{
+      margin-top:16px;
+      display:flex;
+      gap:12px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border:0;
+      padding:12px 16px;
+      border-radius:999px;
+      font-weight:800;
+      cursor:pointer;
+      transition: transform .08s ease, filter .2s ease, opacity .2s ease;
+      user-select:none;
+    }
+    .btn:active{ transform: translateY(2px) scale(.99); }
+
+    .yes{
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color:white;
+      box-shadow: 0 10px 25px #ff3b7a40;
+    }
+    .yes:hover{ filter: brightness(1.03); }
+
+    .no{
+      background:#ffffff;
+      color:#333;
+      border:1px solid #ff77a866;
+      box-shadow: 0 10px 20px #00000010;
+      position:relative;
+    }
+
+    .hidden{ display:none; }
+
+    .message{
+      margin-top:18px;
+      padding:14px 14px;
+      border-radius:18px;
+      background:#fff;
+      border:1px dashed #ff77a8aa;
+      animation: pop .45s ease both;
+      text-align:center;
+    }
+    @keyframes pop{
+      0%{ transform: translateY(8px) scale(.98); opacity:0; }
+      100%{ transform: translateY(0) scale(1); opacity:1; }
+    }
+
+    .tiny{opacity:.7; font-size:13px; margin-top:10px}
+
+    /* floating hearts */
+    .heart{
+      position:absolute;
+      left:var(--x);
+      bottom:-40px;
+      font-size: var(--s);
+      opacity:.9;
+      animation: floatUp var(--d) ease-in forwards;
+      filter: drop-shadow(0 6px 10px #ff3b7a25);
+      user-select:none;
+      pointer-events:none;
+    }
+    @keyframes floatUp{
+      0%{ transform: translateY(0) translateX(0) rotate(0deg); opacity:0; }
+      10%{ opacity:1; }
+      100%{ transform: translateY(-110vh) translateX(var(--drift)) rotate(22deg); opacity:0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" id="card">
+      <!-- Step 1: Question -->
+      <div id="questionStep">
+        <h1>💘 Will you be my Valentine?</h1>
+        <p>(Be honest… but choose wisely 😄)</p>
+
+        <div class="row">
+          <button class="btn yes" id="yesBtn">Yes 💖</button>
+          <button class="btn no" id="noBtn">No 🙃</button>
+        </div>
+
+        <div class="tiny">Tap “Yes” to open your message ✨</div>
+      </div>
+
+      <!-- Step 2: Message -->
+      <div id="messageStep" class="hidden">
+        <h1>YAYYYY!! 💗</h1>
+        <div class="message">
+          <h2 style="margin:0 0 6px; font-size:20px;">❤️ Happy Valentine’s Day!</h2>
+          <p style="margin:0;">
+            <!-- EDIT YOUR MESSAGE HERE -->
+            You make my days better just by being you. 😊
+          </p>
+          <p style="margin:10px 0 0; font-weight:800;">
+            <!-- EDIT YOUR NAME HERE -->
+            — From: (your name)
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const questionStep = document.getElementById("questionStep");
+    const messageStep = document.getElementById("messageStep");
+
+    function spawnHearts(count = 18){
+      for(let i=0;i<count;i++){
+        const el = document.createElement("div");
+        el.className = "heart";
+        el.textContent = Math.random() > 0.15 ? "💗" : "💖";
+        el.style.setProperty("--x", (Math.random()*100).toFixed(2) + "%");
+        el.style.setProperty("--s", (14 + Math.random()*20).toFixed(0) + "px");
+        el.style.setProperty("--d", (2.8 + Math.random()*2.2).toFixed(2) + "s");
+        el.style.setProperty("--drift", ((Math.random()*120)-60).toFixed(0) + "px");
+        document.body.appendChild(el);
+        setTimeout(()=>el.remove(), 5200);
+      }
+    }
+
+    yesBtn.addEventListener("click", () => {
+      questionStep.classList.add("hidden");
+      messageStep.classList.remove("hidden");
+      spawnHearts(30);
+    });
+
+    // Playful "No" button dodge
+    function moveNoButton(){
+      const card = document.getElementById("card");
+      const cardRect = card.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      // Keep it within the card area
+      const padding = 16;
+      const maxX = cardRect.width - btnRect.width - padding;
+      const maxY = cardRect.height - btnRect.height - padding;
+
+      const x = Math.max(padding, Math.random() * maxX);
+      const y = Math.max(padding + 60, Math.random() * maxY); // +60 to avoid covering title
+
+      noBtn.style.position = "absolute";
+      noBtn.style.left = x + "px";
+      noBtn.style.top = y + "px";
+    }
+
+    // Works on mouse + touch
+    noBtn.addEventListener("mouseenter", moveNoButton);
+    noBtn.addEventListener("touchstart", (e) => { e.preventDefault(); moveNoButton(); }, {passive:false});
+    noBtn.addEventListener("click", moveNoButton);
+  </script>
+</body>
+</html>
